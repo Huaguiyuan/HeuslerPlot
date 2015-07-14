@@ -17,6 +17,7 @@ class TestParseOszicar(unittest.TestCase):
         self.assertEqual(mag, -4.9999)
 
 class TestParseEigenval(unittest.TestCase):
+    # spin-polarized case
     def test_Co2MnSi(self):
         eigenval_path = "test_data/e29/Co2MnSi/BANDS/EIGENVAL"
         ks, eigenvals = ParseEigenval(eigenval_path)
@@ -39,6 +40,24 @@ class TestParseEigenval(unittest.TestCase):
         self.assertEqual(eigenvals[-1][0][-1], 66.116215) # last k, last eigenvalue
         self.assertEqual(eigenvals[-1][1][-1], 65.895179)
 
+    # non-spin-polarized case
+    def test_Cr(self):
+        eigenval_path = "test_data/Cr/EIGENVAL"
+        ks, eigenvals = ParseEigenval(eigenval_path)
+        self.assertEqual(len(ks), 145) # nks
+        _vec_equal(self, ks[0], (0.0, 0.0, 0.0))
+        _vec_equal(self, ks[-1], (0.5, 0.5, 0.5))
+
+        self.assertEqual(len(eigenvals[0]), 1) # nspin
+        self.assertEqual(len(eigenvals[0][0]), 22) # nbands
+
+        self.assertEqual(eigenvals[0][0][0], -0.499100) # first k, first eigenvalue
+
+        self.assertEqual(eigenvals[0][0][-1], 62.519142) # first k, last eigenvalue
+
+        self.assertEqual(eigenvals[-1][0][0], 3.072414) # last k, first eigenvalue
+
+        self.assertEqual(eigenvals[-1][0][-1], 58.640904) # last k, last eigenvalue
 
 def _vec_equal(testcase, v, u):
     testcase.assertEqual(len(v), len(u))
