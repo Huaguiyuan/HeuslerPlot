@@ -98,8 +98,7 @@ def ParseEigenval(eigenval_path):
         k = lines[k_line_index].strip().split()[0:-1]
         ka, kb, kc = list(map(float, k))
         ks.append((ka, kb, kc))
-        # Band lines -- if nspin = 1: band index, value.
-        # Band lines -- if nspin = 2: band index, up_value, down_value.
+        # Band lines, if nspin = 1: band index, value.
         if nspin == 1:
             k_eigenvals = []
             for band_index in range(nbands):
@@ -107,6 +106,7 @@ def ParseEigenval(eigenval_path):
                 val = float(band_line.split()[1])
                 k_eigenvals.append(val)
             all_eigenvals.append((k_eigenvals,))
+        # Band lines, if nspin = 2: band index, up_value, down_value.
         else:
             k_eigenvals_up, k_eigenvals_down = [], []
             for band_index in range(nbands):
