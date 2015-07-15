@@ -59,7 +59,7 @@ def _parse_D022_csv(csv_path):
     return result
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Plot VASP bands.")
+    parser = argparse.ArgumentParser(description="Collect D022 scf and bands data into format usable by plot.py.")
     parser.add_argument('D022_scf_Es_path', type=str, help="Path to directory with D022 SCF files (e#/sys/ = SCF).")
     parser.add_argument('D022_bands_path', type=str, help="Path to directory with D022 band files (sys/ = bands).")
     parser.add_argument('collect_path', type=str, help="Path to directory where plotting data will be assembled.")
