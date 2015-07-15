@@ -46,6 +46,7 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=N
             pass
 
         plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
+        plt.close('all')
     else:
         fig = plt.figure(figsize=(12, 5))
 
@@ -81,6 +82,7 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=N
             plt.annotate(logo_text, (0.6545, 0.125), xycoords='figure fraction', size=12)
 
         plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
+        plt.close('all')
 
 def _shift_Fermi(eigenvals, E_Fermi):
     shifted_evs = []
