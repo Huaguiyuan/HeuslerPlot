@@ -230,6 +230,8 @@ if __name__ == "__main__":
             help="Search subdirectories of dir_path of the form e##.")
     parser.add_argument('--logo', action='store_true',
             help="Add Heusler site URL to plot")
+    parser.add_argument('--structure_type', default='L21',
+            help="Type of structure contained in subdirectories of dir_path")
     args = parser.parse_args()
 
     all_data_paths = None
@@ -249,8 +251,8 @@ if __name__ == "__main__":
         # TODO - get this from KPOINTS.
         k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$W$", "$U$", "$X$"]
 
-        # TODO - put somewhere else? Other structure to name?
-        out_path = system_name
+        # TODO - configurable destination (instead of pwd)?
+        out_path = "{}_{}".format(system_name, args.structure_type)
 
         nspin = len(eigenvals[0])
         if nspin == 2:
