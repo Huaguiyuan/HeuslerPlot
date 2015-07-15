@@ -1,5 +1,5 @@
 import unittest
-from parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
+from HeuslerPlot.parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
 
 class TestParseOutcar(unittest.TestCase):
     def test_Co2MnSi(self):
