@@ -245,7 +245,14 @@ if __name__ == "__main__":
     for system_name, system_data_paths in all_data_paths.items():
         E_Fermi, D = ParseOutcar(system_data_paths['outcar_path'])
         magmom = ParseOszicar(system_data_paths['oszicar_path'])
-        ks, eigenvals = ParseEigenval(system_data_paths['eigenval_path'])
+        try:
+            print("Reading EIGENVAL file {}".format(system_data_paths['eigenval_path']))
+            ks, eigenvals = ParseEigenval(system_data_paths['eigenval_path'])
+        except IndexError as e:
+            print("Error reading EIGENVAL file {}; skipping.".format(system_data_paths['eigenval_path']))
+            print("Content of the error:")
+            print(str(e))
+            continue
         
         # The rows of R (the R[i, :]) are the reciprocal lattice vectors.
         R = 2.0 * np.pi * np.linalg.inv(D)
