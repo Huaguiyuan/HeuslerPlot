@@ -1,4 +1,5 @@
 import unittest
+import os
 import numpy as np
 from HeuslerPlot.plot import _cut_duplicates, _recip_dist, _scaled_k_xs
 from HeuslerPlot.parseVASP import ParseEigenval, ParseOutcar
@@ -6,7 +7,8 @@ from HeuslerPlot.parseVASP_test import _vec_equal
 
 class TestCutDuplicates(unittest.TestCase):
     def test_Co2MnSi(self):
-        ks, eigenvals = ParseEigenval("test_data/e29/Co2MnSi/BANDS/EIGENVAL")
+        eigenval_path = os.path.join("test_data", "e29", "Co2MnSi", "BANDS", "EIGENVAL")
+        ks, eigenvals = ParseEigenval(eigenval_path)
         sym_indices, ks_cut, eigenvals_cut = _cut_duplicates(ks, eigenvals)
         self.assertEqual(len(sym_indices), 9)
         nk_per_sym = 40
@@ -20,8 +22,10 @@ class TestCutDuplicates(unittest.TestCase):
 
 class TestScaledKXs(unittest.TestCase):
     def test_Co2MnSi(self):
-        ks, eigenvals = ParseEigenval("test_data/e29/Co2MnSi/BANDS/EIGENVAL")
-        E_Fermi, D = ParseOutcar("test_data/e29/Co2MnSi/OUTCAR")
+        eigenval_path = os.path.join("test_data", "e29", "Co2MnSi", "BANDS", "EIGENVAL")
+        outcar_path = os.path.join("test_data", "e29", "Co2MnSi", "OUTCAR")
+        ks, eigenvals = ParseEigenval(eigenval_path)
+        E_Fermi, D = ParseOutcar(outcar_path)
         R = 2.0 * np.pi * np.linalg.inv(D)
 
         sym_indices, ks_cut, eigenvals_cut = _cut_duplicates(ks, eigenvals)

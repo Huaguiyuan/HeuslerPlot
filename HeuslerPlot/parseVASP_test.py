@@ -1,9 +1,10 @@
 import unittest
+import os
 from HeuslerPlot.parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
 
 class TestParseOutcar(unittest.TestCase):
     def test_Co2MnSi(self):
-        outcar_path = "test_data/e29/Co2MnSi/OUTCAR"
+        outcar_path = os.path.join("test_data", "e29", "Co2MnSi", "OUTCAR")
         E_Fermi, D = ParseOutcar(outcar_path)
         self.assertEqual(E_Fermi, 8.0505)
         _vec_equal(self, D[:, 0], (0.0000000000,  -2.8130955325,   2.8128099892))
@@ -12,14 +13,14 @@ class TestParseOutcar(unittest.TestCase):
 
 class TestParseOszicar(unittest.TestCase):
     def test_Co2MnSi(self):
-        oszicar_path = "test_data/e29/Co2MnSi/OSZICAR"
+        oszicar_path = os.path.join("test_data", "e29", "Co2MnSi", "OSZICAR")
         mag = ParseOszicar(oszicar_path)
         self.assertEqual(mag, -4.9999)
 
 class TestParseEigenval(unittest.TestCase):
     # spin-polarized case
     def test_Co2MnSi(self):
-        eigenval_path = "test_data/e29/Co2MnSi/BANDS/EIGENVAL"
+        eigenval_path = os.path.join("test_data", "e29", "Co2MnSi", "BANDS", "EIGENVAL")
         ks, eigenvals = ParseEigenval(eigenval_path)
         self.assertEqual(len(ks), 320) # nks
         _vec_equal(self, ks[0], (0.0, 0.0, 0.0))
@@ -42,7 +43,7 @@ class TestParseEigenval(unittest.TestCase):
 
     # non-spin-polarized case
     def test_Cr(self):
-        eigenval_path = "test_data/Cr/EIGENVAL"
+        eigenval_path = os.path.join("test_data", "Cr", "EIGENVAL")
         ks, eigenvals = ParseEigenval(eigenval_path)
         self.assertEqual(len(ks), 145) # nks
         _vec_equal(self, ks[0], (0.0, 0.0, 0.0))
