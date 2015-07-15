@@ -17,6 +17,7 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
     # between the symmetry points at the ends of panels.
     recip_dists = _recip_dist(sym_indices, ks_cut, R)
     xs = _scaled_k_xs(sym_indices, ks_cut, recip_dists)
+
     sym_xs = []
     for i in range(len(sym_indices)):
         sym_xs.append(xs[sym_indices[i]])
@@ -35,6 +36,7 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
         plt.xlim(0.0, 1.0)
         plt.ylim(-10.0, 10.0)
         plt.xticks(sym_xs, k_labels)
+        plt.yticks(np.arange(-10.0, 10.0, 2.0))
         plt.grid(b=True)
 
         for b_i in range(nbands):
@@ -50,7 +52,9 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
         plt.xlim(0.0, 1.0)
         plt.ylim(-10.0, 10.0)
         plt.xticks(sym_xs, k_labels)
-        plt.grid(b=True)
+        plt.yticks(np.arange(-10.0, 10.0, 2.0))
+        plt.grid(b=True, linestyle='-', linewidth=0.5, axis='x')
+        plt.grid(b=True, axis='y', linewidth=0.5)
 
         for b_i in range(nbands):
             plt.plot(xs, eigenval_ys[0][b_i], 'k')
@@ -60,7 +64,9 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
         plt.xlim(0.0, 1.0)
         plt.ylim(-10.0, 10.0)
         plt.xticks(sym_xs, k_labels)
-        plt.grid(b=True)
+        plt.yticks(np.arange(-10.0, 10.0, 2.0))
+        plt.grid(b=True, linestyle='-', linewidth=0.5, axis='x')
+        plt.grid(b=True, axis='y', linewidth=0.5)
 
         for b_i in range(nbands):
             plt.plot(xs, eigenval_ys[1][b_i], 'k')
