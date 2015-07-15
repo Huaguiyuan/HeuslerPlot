@@ -1,0 +1,69 @@
+import os
+import re
+from pathlib import Path
+
+def FindEs(dir_path):
+    '''Look for subdirectories of dir_path which have names of the form
+    e[0-9][0-9] (such as 'e18', 'e29', etc.). For each such subdirectory, 
+    search it for subdirectories with the appropriate band files (as given
+    by FindBands).
+
+    Return a dictionary with keys given by system names, as specified by the
+    names of the subdirectories of e##. The corresponding values are the
+    same as those returned by FindBands, giving another dictionary with keys
+    "outcar_path", "oszicar_path", "eigenval_path", and "kpoints_path" giving
+    the appropriate file paths.
+    '''
+    result = {}
+    # Enumerate the subdirectories of dir_path.
+    p = Path(dir_path)
+    sub_paths = [x for x in p.iterdir() if x.is_dir()]
+    # Iterate over the subdirectories if dir_path.
+    # Look for those with the form "e[0-9][0-9]".
+    pattern = re.compile("e[0-9][0-9]")
+    for sub_path in sub_paths:
+        # Reduce sub_path: /path/to/bands/e18 --> e18.
+        sub_name = os.path.basename(str(sub_path))
+
+        if pattern.fullmatch(sub_name) != None:
+            # sub_path has the correct form; search its subdirectories
+            # and add their data.
+            this_e_result = FindBands(str(sub_path))
+            for k, v in this_e_result.items():
+                result[k] = v
+
+    return result
+
+def FindBands(dir_path):
+    '''For each subdirectory sub_path contained in dir_path, look for
+    sub_path/OUTCAR, sub_path/OSZICAR, sub_path/BANDS/EIGENVAL, and
+    sub_path/BANDS/KPOINTS.
+
+    Return a dictionary with keys given by system names, as specified by the
+    names of the subdirectories of dir_path. The corresponding values give
+    another dictionary with keys "outcar_path", "oszicar_path", "eigenval_path",
+    and "kpoints_path" giving the appropriate file paths.
+    '''
+    result = {}
+    # Enumerate the subdirectories of dir_path.
+    p = Path(dir_path)
+    sub_paths = [x for x in p.iterdir() if x.is_dir()]
+    # Iterate over the subdirectories if dir_path.
+    for sub_path in sub_paths:
+        # Assemble paths to required data files in this subdirectory.
+        subdir_result = {}
+        subdir_result["outcar_path"] = str(sub_path / "OUTCAR")
+        subdir_result["oszicar_path"] = str(sub_path / "OSZICAR")
+        subdir_result["eigenval_path"] = str(sub_path / "BANDS" / "EIGENVAL")
+        subdir_result["kpoints_path"] = str(sub_path / "BANDS" / "KPOINTS")
+        # Check if all of these files actually exist.
+        subdir_ok = True
+        for data_file in subdir_result.values():
+            if not os.path.exists(data_file):
+                subdir_ok = False
+        # If all required files exist, add this sub_path to the result.
+        if subdir_ok:
+            sub_name = os.path.basename(str(sub_path))
+            result[sub_name] = subdir_result
+
+    return result
