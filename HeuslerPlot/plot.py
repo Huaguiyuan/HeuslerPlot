@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 from HeuslerPlot.search import FindEs, FindBands
 from HeuslerPlot.parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
 
@@ -9,9 +10,72 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
     # Note the indices of the symmetry points in the new k and eigenval lists.
     sym_indices, ks_cut, eigenvals_cut = _cut_duplicates(ks, eigenvals)
 
-    recip_dists = _recip_dist(sym_indices, ks_cut, R)
+    # Shift values so that E_F = 0.0.
+    eigenvals_cut = _shift_Fermi(eigenvals_cut, E_Fermi)
 
+    # Get x-positions of k values, scaled appropriately by the distance
+    # between the symmetry points at the ends of panels.
+    recip_dists = _recip_dist(sym_indices, ks_cut, R)
     xs = _scaled_k_xs(sym_indices, ks_cut, recip_dists)
+    sym_xs = []
+    for i in range(len(sym_indices)):
+        sym_xs.append(xs[sym_indices[i]])
+
+    # Transform eigenvals[k_index][spin][band_index] into
+    # eigenval_ys[spin][band_index][k_index] so we can use it as an argument
+    # for plt.plot(xs, ys).
+    eigenval_ys = _make_eigenval_series(eigenvals_cut)
+
+    nspin = len(eigenvals[0])
+    nbands = len(eigenvals[0][0])
+    if nspin == 1:
+        fig = plt.figure(figsize=(6, 5))
+
+        plt.ylabel("Energy (eV)")
+        plt.xlim(0.0, 1.0)
+        plt.ylim(-10.0, 10.0)
+        plt.xticks(sym_xs, k_labels)
+        plt.grid(b=True)
+
+        for b_i in range(nbands):
+            plt.plot(xs, eigenval_ys[0][b_i], 'k')
+
+        plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
+    else:
+        fig = plt.figure(figsize=(12, 5))
+
+        up_plot = plt.subplot(121)
+        plt.title("Up Spin")
+        plt.ylabel("Energy (eV)")
+        plt.xlim(0.0, 1.0)
+        plt.ylim(-10.0, 10.0)
+        plt.xticks(sym_xs, k_labels)
+        plt.grid(b=True)
+
+        for b_i in range(nbands):
+            plt.plot(xs, eigenval_ys[0][b_i], 'k')
+
+        down_plot = plt.subplot(122)
+        plt.title("Down Spin")
+        plt.xlim(0.0, 1.0)
+        plt.ylim(-10.0, 10.0)
+        plt.xticks(sym_xs, k_labels)
+        plt.grid(b=True)
+
+        for b_i in range(nbands):
+            plt.plot(xs, eigenval_ys[1][b_i], 'k')
+
+        plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
+
+def _shift_Fermi(eigenvals, E_Fermi):
+    shifted_evs = []
+    for k_i in range(len(eigenvals)):
+        shifted_evs.append([])
+        for s in range(len(eigenvals[0])):
+            shifted_evs[k_i].append([])
+            for b_i in range(len(eigenvals[0][0])):
+                shifted_evs[k_i][s].append(eigenvals[k_i][s][b_i] - E_Fermi)
+    return shifted_evs
 
 def _cut_duplicates(ks, eigenvals):
     '''Return lists sym_indices, ks_cut, and eigenvals_cut, where ks_cut and
@@ -87,6 +151,34 @@ def _scaled_k_xs(sym_indices, ks_cut, recip_dists):
             panel_number += 1
 
     return xs
+
+def _make_eigenval_series(eigenvals):
+    '''Return a copy of eigenvals rearranged such that it is addressed
+    as eigenval_series[spin][band_index][k_index].
+    The eigenval_series[spin][band_index] values can then be used as ys in
+    plt.plot(xs, ys).
+    '''
+    nk = len(eigenvals)
+    nspin = len(eigenvals[0])
+    nbands = len(eigenvals[0][0])
+
+    eigenval_series = []
+    for s in range(nspin):
+        eigenval_series.append([])
+        for b_i in range(nbands):
+            eigenval_series[s].append([])
+
+    for k_i in range(nk):
+        for s in range(nspin):
+            for b_i in range(nbands):
+                # Make sure that data is sorted (avoid jumps).
+                # Should already be sorted in VASP output, but can
+                # double-check here.
+                eigenvals_k_s_sorted = sorted(eigenvals[k_i][s])
+                # Put in new order.
+                eigenval_series[s][b_i].append(eigenvals_k_s_sorted[b_i])
+
+    return eigenval_series
 
 def swap_channels_if_mag_neg(magmom, eigenvals):
     '''If magmom < 0, eigenvals[k_index][0] gives "down" eigenvalues and
