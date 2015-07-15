@@ -103,6 +103,7 @@ def _cut_duplicates(ks, eigenvals):
     # First symmetry point is at the initial k-point.
     sym_indices = [0]
     ks_cut, eigenvals_cut = [], []
+    eps = 1e-9 # consider k-points equal if components differ by less than eps
 
     for ks_index, k in enumerate(ks):
         # Always keep the first point.
@@ -113,7 +114,7 @@ def _cut_duplicates(ks, eigenvals):
         # If we get here, ks_index > 0.
         # Check if this point is the same as the last one.
         prev_k = ks[ks_index - 1]
-        if _vec_equal(k, prev_k):
+        if _vec_approx_equal(k, prev_k, eps):
             # We are at the second point in a duplicate pair.
             # Cut out this point (by not adding it to ks_cut, eigenvals_cut)
             # and note the location of the first point of the pair.
@@ -213,15 +214,14 @@ def swap_channels_if_mag_neg(magmom, eigenvals):
     else:
         return eigenvals
 
-# Perform exact equality comparison between vectors.
-# --> Assumes no floating-point error is present; this may be the case if u
-#     and v are obtained from reading a file (where u and v are reported with
-#     some not-too-high precision, less than machine epsilon).
-def _vec_equal(u, v):
+# Perform approximate equality comparison between vectors.
+# Returns True if individual components differ by no more than eps;
+# otherwise returns False.
+def _vec_approx_equal(u, v, eps):
     if len(u) != len(v):
         raise ValueError("Comparing vectors of unequal length")
     for i in range(len(u)):
-        if u[i] != v[i]:
+        if abs(u[i] - v[i]) > eps:
             return False
     return True
 
@@ -257,8 +257,14 @@ if __name__ == "__main__":
         # The rows of R (the R[i, :]) are the reciprocal lattice vectors.
         R = 2.0 * np.pi * np.linalg.inv(D)
 
-        # TODO - get this from KPOINTS.
-        k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$W$", "$U$", "$X$"]
+        # TODO - get k_labels from KPOINTS?
+        k_labels = None
+        if args.structure_type in ["L21", "C1b", "XA"]:
+            k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$U$", "$W$", "$L$", "$K$", "$W$", "$U$", "$X$"]
+        elif args.structure_type == "D022":
+            k_labels = ["$N$", "$P$", "$X$", "$\Gamma$", "$Z$"]
+        else:
+            raise ValueError("Structure type {} not supported".format(args.structure_type))
 
         # TODO - configurable destination (instead of pwd)?
         out_path = "{}_{}".format(system_name, args.structure_type)
