@@ -1,14 +1,24 @@
 import argparse
 import numpy as np
 from HeuslerPlot.search import FindEs, FindBands
+from HeuslerPlot.parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
 
-def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path):
+def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
     # Remove duplicate k-point pairs; they correspond to symmetry points
     # (where VASP moves from one k1->k2 path to another).
     # Note the indices of the symmetry points in the new k and eigenval lists.
     sym_indices, ks_cut, eigenvals_cut = _cut_duplicates(ks, eigenvals)
 
+    recip_dists = _recip_dist(sym_indices, ks_cut, R)
+
+    xs = _scaled_k_xs(sym_indices, ks_cut, recip_dists)
+
 def _cut_duplicates(ks, eigenvals):
+    '''Return lists sym_indices, ks_cut, and eigenvals_cut, where ks_cut and
+    eigenvals_cut have had one member of duplicate pair entries removed and
+    sym_indices gives indices in the cut lists which correspond to symmetry
+    points (at the ends and where the duplicate pairs were).
+    '''
     # First symmetry point is at the initial k-point.
     sym_indices = [0]
     ks_cut, eigenvals_cut = [], []
@@ -36,6 +46,63 @@ def _cut_duplicates(ks, eigenvals):
     sym_indices.append(len(ks_cut) - 1)
 
     return sym_indices, ks_cut, eigenvals_cut
+
+def _recip_dist(sym_indices, ks_cut, R):
+    '''Return a list of values which give the Cartesian distance between each
+    pair of symmetry point.
+    '''
+    dists = []
+    for point_index, k_index in enumerate(sym_indices):
+        # Skip first point (making [k, previous k] pairs).
+        if point_index == 0:
+            continue
+
+        k_Cart = np.dot(ks_cut[k_index], R)
+        prev_k_index = sym_indices[point_index-1]
+        prev_k_Cart = np.dot(ks_cut[prev_k_index], R)
+
+        k_to_prev_k = np.subtract(prev_k_Cart, k_Cart)
+        this_dist = np.linalg.norm(k_to_prev_k)
+        dists.append(this_dist)
+
+    return dists
+
+def _scaled_k_xs(sym_indices, ks_cut, recip_dists):
+    total_dist = sum(recip_dists)
+    xs = []
+
+    current_x = 0.0
+    base_x = 0.0
+    panel_start_index = 0
+    panel_number = 0
+    for x_index in range(len(ks_cut)):
+        points_in_panel = sym_indices[panel_number+1] - sym_indices[panel_number] + 1
+        step = (recip_dists[panel_number] / total_dist) / (points_in_panel - 1)
+        current_x = base_x + (x_index - panel_start_index)*step
+        xs.append(current_x)
+
+        if x_index in sym_indices and x_index != 0:
+            base_x = current_x
+            panel_start_index = x_index
+            panel_number += 1
+
+    return xs
+
+def swap_channels_if_mag_neg(magmom, eigenvals):
+    '''If magmom < 0, eigenvals[k_index][0] gives "down" eigenvalues and
+    eigenvals[k_index][1] gives "up" eigenvalues. To have consistant up/down
+    identification, need to swap these (since the sign of magmom is arbitrary
+    in the absence of an applied field).
+
+    Returns a new eigenval list with this swap made if necessary.
+    '''
+    if magmom < 0.0:
+        corrected = []
+        for k_index in range(len(eigenvals)):
+            corrected.append((eigenvals[k_index][1], eigenvals[k_index][0]))
+        return corrected
+    else:
+        return eigenvals
 
 # Perform exact equality comparison between vectors.
 # --> Assumes no floating-point error is present; this may be the case if u
@@ -76,4 +143,8 @@ if __name__ == "__main__":
         # TODO - put somewhere else? Other structure to name?
         out_path = system_name
 
-        PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path)
+        nspin = len(eigenvals[0])
+        if nspin == 2:
+            eigenvals = swap_channels_if_mag_neg(magmom, eigenvals)
+
+        PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path)
