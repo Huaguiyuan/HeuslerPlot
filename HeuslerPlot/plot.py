@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from HeuslerPlot.search import FindEs, FindBands
 from HeuslerPlot.parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
 
-def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
+def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=None):
     # Remove duplicate k-point pairs; they correspond to symmetry points
     # (where VASP moves from one k1->k2 path to another).
     # Note the indices of the symmetry points in the new k and eigenval lists.
@@ -42,6 +42,9 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
         for b_i in range(nbands):
             plt.plot(xs, eigenval_ys[0][b_i], 'k')
 
+        if logo_text != None:
+            pass
+
         plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
     else:
         fig = plt.figure(figsize=(12, 5))
@@ -59,6 +62,9 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
         for b_i in range(nbands):
             plt.plot(xs, eigenval_ys[0][b_i], 'k')
 
+        if logo_text != None:
+            plt.annotate(logo_text, (0.155, 0.125), xycoords='figure fraction', size=12)
+
         down_plot = plt.subplot(122)
         plt.title("Down Spin")
         plt.xlim(0.0, 1.0)
@@ -70,6 +76,9 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path):
 
         for b_i in range(nbands):
             plt.plot(xs, eigenval_ys[1][b_i], 'k')
+
+        if logo_text != None:
+            plt.annotate(logo_text, (0.6545, 0.125), xycoords='figure fraction', size=12)
 
         plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
 
@@ -219,6 +228,8 @@ if __name__ == "__main__":
     parser.add_argument('dir_path', type=str, help="Path to directory with data to plot.")
     parser.add_argument('--searchEs', action='store_true',
             help="Search subdirectories of dir_path of the form e##.")
+    parser.add_argument('--logo', action='store_true',
+            help="Add Heusler site URL to plot")
     args = parser.parse_args()
 
     all_data_paths = None
@@ -245,4 +256,8 @@ if __name__ == "__main__":
         if nspin == 2:
             eigenvals = swap_channels_if_mag_neg(magmom, eigenvals)
 
-        PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path)
+        logo_text = None
+        if args.logo:
+            logo_text = "www.heusleralloys.mint.ua.edu"
+
+        PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text)
