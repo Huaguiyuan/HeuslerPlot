@@ -36,7 +36,7 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=N
         plt.xlim(0.0, 1.0)
         plt.ylim(-10.0, 10.0)
         plt.xticks(sym_xs, k_labels)
-        plt.yticks(np.arange(-10.0, 10.0, 2.0))
+        plt.yticks(np.arange(-10.0, 10.0+1e-6, 2.0))
         plt.grid(b=True)
 
         for b_i in range(nbands):
@@ -71,7 +71,7 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=N
         plt.xlim(0.0, 1.0)
         plt.ylim(-10.0, 10.0)
         plt.xticks(sym_xs, k_labels)
-        plt.yticks(np.arange(-10.0, 10.0, 2.0))
+        plt.yticks(np.arange(-10.0, 10.0+1e-6, 2.0))
         plt.grid(b=True, linestyle='-', linewidth=0.5, axis='x')
         plt.grid(b=True, axis='y', linewidth=0.5)
 
