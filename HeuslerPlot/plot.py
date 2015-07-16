@@ -334,4 +334,4 @@ if __name__ == "__main__":
         if args.logo:
             logo_text = "www.heusleralloys.mint.ua.edu"
 
-        PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text)
+        PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text)
