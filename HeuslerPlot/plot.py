@@ -43,12 +43,14 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=N
             plt.plot(xs, eigenval_ys[0][b_i], 'k')
 
         if logo_text != None:
+            # TODO - logo position for nspin = 1.
             pass
 
         plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
         plt.close('all')
     else:
-        fig = plt.figure(figsize=(12, 5))
+        # TODO - make figure size an argument?
+        fig = plt.figure(figsize=(16, 5))
 
         up_plot = plt.subplot(121)
         plt.title("Up Spin")
@@ -234,17 +236,37 @@ if __name__ == "__main__":
             help="Add Heusler site URL to plot")
     parser.add_argument('--structure_type', default='L21',
             help="Type of structure contained in subdirectories of dir_path")
+    parser.add_argument('--scf_dir', default=None,
+            help="Separate directory for SCF files")
     args = parser.parse_args()
 
     all_data_paths = None
+    scf_data_paths = None
     if args.searchEs:
         all_data_paths = FindEs(args.dir_path)
+        if args.scf_dir != None:
+            scf_data_paths = FindEs(args.scf_dir)
     else:
         all_data_paths = FindBands(args.dir_path)
+        if args.scf_dir != None:
+            scf_data_paths = FindEs(args.scf_dir)
 
     for system_name, system_data_paths in all_data_paths.items():
-        E_Fermi, D = ParseOutcar(system_data_paths['outcar_path'])
-        magmom = ParseOszicar(system_data_paths['oszicar_path'])
+        E_Fermi, D, magmom = None, None, None
+        if args.scf_dir != None:
+            try:
+                print("Reading OUTCAR file for {}".format(system_name))
+                E_Fermi, D = ParseOutcar(scf_data_paths[system_name]['outcar_path'])
+                magmom = ParseOszicar(scf_data_paths[system_name]['oszicar_path'])
+            except KeyError as e:
+                print("Error reading OUTCAR file for {}; skipping.".format(system_name))
+                print("Content of the error:")
+                print(str(e))
+                continue
+        else:
+            E_Fermi, D = ParseOutcar(system_data_paths['outcar_path'])
+            magmom = ParseOszicar(system_data_paths['oszicar_path'])
+
         try:
             print("Reading EIGENVAL file {}".format(system_data_paths['eigenval_path']))
             ks, eigenvals = ParseEigenval(system_data_paths['eigenval_path'])
