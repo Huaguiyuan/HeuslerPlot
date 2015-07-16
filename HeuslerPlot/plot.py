@@ -168,18 +168,24 @@ def _cut_duplicates(ks, eigenvals):
 
 def _recip_dist(sym_indices, ks_cut, R):
     '''Return a list of values which give the Cartesian distance between each
-    pair of symmetry point.
+    pair of consecutive symmetry points.
     '''
     dists = []
     for point_index, k_index in enumerate(sym_indices):
-        # Skip first point (making [k, previous k] pairs).
+        # Skip first point (need to make [k, previous k] pairs).
         if point_index == 0:
             continue
-
-        k_Cart = np.dot(ks_cut[k_index], R)
+        # Get k and previous k (prev_k).
+        k = ks_cut[k_index]
         prev_k_index = sym_indices[point_index-1]
-        prev_k_Cart = np.dot(ks_cut[prev_k_index], R)
-
+        prev_k = ks_cut[prev_k_index]
+        # Convert k and prev_k from reciprocal lattice coordinates to
+        # Cartesian coordinates.
+        # Note that k and prev_k here are row vectors (i.e. 1x3 'dual vectors',
+        # the transpose of 3x1 column 'vectors').
+        k_Cart = np.dot(k, R)
+        prev_k_Cart = np.dot(prev_k, R)
+        # Get vector from k to prev_k and its length.
         k_to_prev_k = np.subtract(prev_k_Cart, k_Cart)
         this_dist = np.linalg.norm(k_to_prev_k)
         dists.append(this_dist)
@@ -187,6 +193,12 @@ def _recip_dist(sym_indices, ks_cut, R):
     return dists
 
 def _scaled_k_xs(sym_indices, ks_cut, recip_dists):
+    '''Return a list of x values at which each k value in ks_cut will be
+    plotted. The sizes of the panels between symmetry points are scaled
+    such that these sizes correspond to the Cartesian distance between the
+    k-points at the ends of the panel (relative to the sum of these distances
+    over all panels).
+    '''
     total_dist = sum(recip_dists)
     xs = []
 
@@ -195,11 +207,20 @@ def _scaled_k_xs(sym_indices, ks_cut, recip_dists):
     panel_start_index = 0
     panel_number = 0
     for x_index in range(len(ks_cut)):
+        # At the last value in a panel, x_index - panel_start_index = points_in_panel - 1.
+        # Set step such that (points_in_panel - 1) * step = panel_x_length,
+        # i.e. such that the last value in a panel has an x value the appropriate distance
+        # away from the first value in that panel.
         points_in_panel = sym_indices[panel_number+1] - sym_indices[panel_number] + 1
-        step = (recip_dists[panel_number] / total_dist) / (points_in_panel - 1)
+        panel_x_length = recip_dists[panel_number] / total_dist
+        step = panel_x_length / (points_in_panel - 1)
         current_x = base_x + (x_index - panel_start_index)*step
         xs.append(current_x)
 
+        # When we reach the right side of a panel, we are at the left side of the next panel.
+        # In this situation, current_x = the left side of the next panel: make this the new base_x.
+        # Also set panel_start_index = x_index so that xs[panel_start_index] = the new base_x,
+        # and advance the count of which panel we are on.
         if x_index in sym_indices and x_index != 0:
             base_x = current_x
             panel_start_index = x_index
