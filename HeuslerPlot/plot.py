@@ -4,7 +4,38 @@ import matplotlib.pyplot as plt
 from HeuslerPlot.search import FindEs, FindBands
 from HeuslerPlot.parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
 
-def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=None):
+def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text=None):
+    '''Plot the bands given by ks and eigenvals. Plotted eigenvals will
+    be shifted so that E = 0 corresponds to E_Fermi. Symmetry points are
+    labeled by k_labels, and panels are sized such that their width
+    corresponds to the length of the corresponding path in Cartesian
+    coordinates. Optionally, a text logo can be displayed over the plot.
+
+    ks = a list of k-points with the form returned by parseVASP.ParseEigenval.
+        The elements have the form (ka, kb, kc) giving the value of the
+        corresponding k-point in reciprocal lattice coordinates.
+    eigenvals = a list of eigenvalues with the form returned by
+        parseVASP.ParseEigenval. Eigenvalues are stored with the structure
+        eigenvals[k_index][spin_index][band_index]. If the calculation
+        is non-spin-polarized or has noncollinear spins, spin_index is
+        always 0. If the calculation is spin-polarized with collinear
+        spins, spin_index may be 0 or 1 (corresponding to up- and down-states).
+    E_Fermi = the Fermi energy, used to shift plotted eigenvalues such that
+        E = 0 corresponds to E_Fermi.
+    k_labels = a list of strings labelling the symmetry points used in the plot.
+        Symmetry points are assumed to lie at the beginning and end of the plot
+        and at all points in between at which the same k-point occurs twice
+        in a row.
+    R = a 3x3 numpy array with rows giving the reciprocal lattice vectors
+        (R[i, :] corresponds to the i'th reciprocal lattice vector).
+    out_path = path at which the plot file will be written.
+    logo_text = if this is not None, its value is written on the plot.
+    '''
+    # TODO - generalize from 'doubled k-points = symmetry point' approach
+    # to allow for discontinuous panels.
+    # Add an optional argument giving the number of k-points per panel in
+    # eigenvals?
+
     # Remove duplicate k-point pairs; they correspond to symmetry points
     # (where VASP moves from one k1->k2 path to another).
     # Note the indices of the symmetry points in the new k and eigenval lists.
@@ -87,6 +118,10 @@ def PlotBands(ks, eigenvals, magmom, E_Fermi, k_labels, R, out_path, logo_text=N
         plt.close('all')
 
 def _shift_Fermi(eigenvals, E_Fermi):
+    '''Return a copy of eigenvals where E_Fermi has been subtracted from
+    each value. In the returned set of eigenvalues, E = 0 corresponds to
+    E_Fermi.
+    '''
     shifted_evs = []
     for k_i in range(len(eigenvals)):
         shifted_evs.append([])
