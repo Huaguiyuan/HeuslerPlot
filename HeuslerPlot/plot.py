@@ -81,7 +81,7 @@ def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text=None):
         plt.close('all')
     else:
         # TODO - make figure size an argument?
-        fig = plt.figure(figsize=(16, 5))
+        fig = plt.figure(figsize=(12, 5))
 
         up_plot = plt.subplot(121)
         plt.title("Up Spin")
@@ -338,7 +338,10 @@ if __name__ == "__main__":
         # TODO - get k_labels from KPOINTS?
         k_labels = None
         if args.structure_type in ["L21", "C1b", "XA"]:
-            k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$U$", "$W$", "$L$", "$K$", "$W$", "$U$", "$X$"]
+            # Setyawan path
+            #k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$U$", "$W$", "$L$", "$K$", "$W$", "$U$", "$X$"]
+            # FPLO path
+            k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$W$", "$U$", "$X$"]
         elif args.structure_type == "D022":
             k_labels = ["$N$", "$P$", "$X$", "$\Gamma$", "$Z$"]
         else:
