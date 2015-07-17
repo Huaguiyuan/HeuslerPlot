@@ -2,13 +2,38 @@
 
 Instructions for installation on Debian derivatives (Debian/Ubuntu/Mint/etc.).
 
-Requires numpy and matplotlib:
+Requires setuptools, numpy, and matplotlib:
 
-    sudo apt-get install python3-numpy python3-matplotlib python3-tk
+    sudo apt-get install python3-setuptools python3-dev python3-numpy python3-matplotlib python3-tk
 
-Get setuptools and install using setup.py:
+compress.py requires libpng >= 1.6:
 
-    sudo apt-get install python3-setuptools
+    cd ~
+    wget http://ufpr.dl.sourceforge.net/project/libpng/libpng16/1.6.17/libpng-1.6.17.tar.gz
+    tar -xvzf libpng-1.6.17.tar.gz
+    cd libpng-1.6.17.tar.gz
+    ./configure
+    make check
+    sudo make install
+
+Add /usr/local/lib to `LD_LIBRARY_PATH` -- add the following to ~/.bashrc and then restart bash:
+
+    if [ -z "$LD_LIBRARY_PATH" ]; then
+        export LD_LIBRARY_PATH=/usr/local/lib
+    else
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+    fi
+
+compress.py also requires [pngquant](https://pngquant.org/):
+
+    cd ~
+    git clone https://github.com/pornel/pngquant.git
+    cd pngquant
+    ./configure
+    sudo make install
+
+Go back to HeuslerPlot directory and install using setup.py:
+
     sudo python3 setup.py install
 
 To have changes to the source reflected immediately:
