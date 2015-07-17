@@ -1,0 +1,12 @@
+CoCrSi           # Name of System (not used)
+   5.661         # Lattice parameter in angstroms
+0 0.5 .50000000000000000000
+0.5 0   .50000000000000000000
+0.5 0.5 0
+   Co   Cr   Si
+   2     1    1
+Direct
+0 0 0 
+-0.5 0.5 0.5 
+-0.25 -0.25 -0.25 
+0.25 0.25 0.25 
