@@ -356,6 +356,6 @@ if __name__ == "__main__":
 
         logo_text = None
         if args.logo:
-            logo_text = "www.heusleralloys.mint.ua.edu"
+            logo_text = "heusleralloys.mint.ua.edu"
 
         PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text)
