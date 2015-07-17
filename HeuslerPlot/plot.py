@@ -61,7 +61,7 @@ def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text=None):
     nspin = len(eigenvals[0])
     nbands = len(eigenvals[0][0])
     if nspin == 1:
-        fig = plt.figure(figsize=(6, 5))
+        fig = plt.figure(figsize=(7.5, 5))
 
         plt.ylabel("Energy (eV)")
         plt.xlim(0.0, 1.0)
@@ -81,7 +81,7 @@ def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text=None):
         plt.close('all')
     else:
         # TODO - make figure size an argument?
-        fig = plt.figure(figsize=(12, 5))
+        fig = plt.figure(figsize=(15, 5))
 
         up_plot = plt.subplot(121)
         plt.title("Up Spin")
@@ -97,7 +97,7 @@ def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text=None):
             plt.plot(xs, eigenval_ys[0][b_i], 'k')
 
         if logo_text != None:
-            plt.annotate(logo_text, (0.155, 0.125), xycoords='figure fraction', size=12)
+            plt.annotate(logo_text, (0.175, 0.125), xycoords='figure fraction', size=12)
 
         down_plot = plt.subplot(122)
         plt.title("Down Spin")
@@ -112,7 +112,7 @@ def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text=None):
             plt.plot(xs, eigenval_ys[1][b_i], 'k')
 
         if logo_text != None:
-            plt.annotate(logo_text, (0.6545, 0.125), xycoords='figure fraction', size=12)
+            plt.annotate(logo_text, (0.6795, 0.125), xycoords='figure fraction', size=12)
 
         plt.savefig(out_path + '.png', bbox_inches='tight', dpi=500)
         plt.close('all')
