@@ -34,10 +34,12 @@ def FindEs(dir_path):
 
     return result
 
-def FindBands(dir_path):
+def FindBands(dir_path, additional_subdir_path, bands_name):
     '''For each subdirectory sub_path contained in dir_path, look for
-    sub_path/OUTCAR, sub_path/OSZICAR, sub_path/BANDS/EIGENVAL, and
-    sub_path/BANDS/KPOINTS.
+    sub_path/OUTCAR, sub_path/OSZICAR, sub_path/bands_name/EIGENVAL, and
+    sub_path/bands_name/KPOINTS.
+
+    If additional_subdir_path != None, add it to sub_path.
 
     Return a dictionary with keys given by system names, as specified by the
     names of the subdirectories of dir_path. The corresponding values give
@@ -50,12 +52,15 @@ def FindBands(dir_path):
     sub_paths = [x for x in p.iterdir() if x.is_dir()]
     # Iterate over the subdirectories if dir_path.
     for sub_path in sub_paths:
+        sub_name = os.path.basename(str(sub_path))
+        if additional_subdir_path != None:
+            sub_path = sub_path / additional_subdir_path
         # Assemble paths to required data files in this subdirectory.
         subdir_result = {}
         subdir_result["outcar_path"] = str(sub_path / "OUTCAR")
         subdir_result["oszicar_path"] = str(sub_path / "OSZICAR")
-        subdir_result["eigenval_path"] = str(sub_path / "BANDS" / "EIGENVAL")
-        subdir_result["kpoints_path"] = str(sub_path / "BANDS" / "KPOINTS")
+        subdir_result["eigenval_path"] = str(sub_path / bands_name / "EIGENVAL")
+        subdir_result["kpoints_path"] = str(sub_path / bands_name / "KPOINTS")
         # Check if all of these files actually exist.
         subdir_ok = True
         for data_file in subdir_result.values():
@@ -63,7 +68,6 @@ def FindBands(dir_path):
                 subdir_ok = False
         # If all required files exist, add this sub_path to the result.
         if subdir_ok:
-            sub_name = os.path.basename(str(sub_path))
             result[sub_name] = subdir_result
 
     return result

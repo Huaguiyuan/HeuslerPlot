@@ -294,6 +294,10 @@ if __name__ == "__main__":
             help="Type of structure contained in subdirectories of dir_path")
     parser.add_argument('--scf_dir', default=None,
             help="Separate directory for SCF files")
+    parser.add_argument('--subdir_path', default=None,
+            help="Additional subdirectory to search under system_name")
+    parser.add_argument('--bands_name', default="BANDS",
+            help="Bands subdirectory name")
     args = parser.parse_args()
 
     all_data_paths = None
@@ -303,9 +307,9 @@ if __name__ == "__main__":
         if args.scf_dir != None:
             scf_data_paths = FindEs(args.scf_dir)
     else:
-        all_data_paths = FindBands(args.dir_path)
+        all_data_paths = FindBands(args.dir_path, args.subdir_path, args.bands_name)
         if args.scf_dir != None:
-            scf_data_paths = FindEs(args.scf_dir)
+            scf_data_paths = FindEs(args.scf_dir, args.subdir_path, args.bands_name)
 
     for system_name, system_data_paths in all_data_paths.items():
         E_Fermi, D, magmom = None, None, None
