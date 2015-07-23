@@ -2,7 +2,7 @@ import os
 import re
 from pathlib import Path
 
-def FindEs(dir_path):
+def FindEs(dir_path, subdir_path=None, bands_name=None):
     '''Look for subdirectories of dir_path which have names of the form
     e[0-9][0-9] (such as 'e18', 'e29', etc.). For each such subdirectory, 
     search it for subdirectories with the appropriate band files (as given
@@ -28,7 +28,7 @@ def FindEs(dir_path):
         if pattern.fullmatch(sub_name) != None:
             # sub_path has the correct form; search its subdirectories
             # and add their data.
-            this_e_result = FindBands(str(sub_path))
+            this_e_result = FindBands(str(sub_path), subdir_path, bands_name)
             for k, v in this_e_result.items():
                 result[k] = v
 

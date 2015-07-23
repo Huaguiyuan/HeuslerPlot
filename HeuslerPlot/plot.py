@@ -303,13 +303,13 @@ if __name__ == "__main__":
     all_data_paths = None
     scf_data_paths = None
     if args.searchEs:
-        all_data_paths = FindEs(args.dir_path)
+        all_data_paths = FindEs(args.dir_path, args.subdir_path, args.bands_name)
         if args.scf_dir != None:
-            scf_data_paths = FindEs(args.scf_dir)
+            scf_data_paths = FindEs(args.scf_dir, args.subdir_path, args.bands_name)
     else:
         all_data_paths = FindBands(args.dir_path, args.subdir_path, args.bands_name)
         if args.scf_dir != None:
-            scf_data_paths = FindEs(args.scf_dir, args.subdir_path, args.bands_name)
+            scf_data_paths = FindBands(args.scf_dir, args.subdir_path, args.bands_name)
 
     for system_name, system_data_paths in all_data_paths.items():
         E_Fermi, D, magmom = None, None, None
