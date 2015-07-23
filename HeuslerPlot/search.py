@@ -46,6 +46,9 @@ def FindBands(dir_path, additional_subdir_path, bands_name):
     another dictionary with keys "outcar_path", "oszicar_path", "eigenval_path",
     and "kpoints_path" giving the appropriate file paths.
     '''
+    if bands_name == None:
+        bands_name = "BANDS"
+
     result = {}
     # Enumerate the subdirectories of dir_path.
     p = Path(dir_path)
