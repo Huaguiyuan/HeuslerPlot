@@ -24,21 +24,17 @@ def ParseOutcar(outcar_path):
     # Lattice vector lines.
     # Looks like:
     #
-    #   Lattice vectors:
-    #
-    #  A1 = (   0.0000000000,  -2.8130955325,   2.8128099892)
-    #  A2 = (   0.0000000000,   2.8130955325,   2.8128099892)
-    #  A3 = (  -2.8130955325,   0.0000000000,  -2.8128099892)
+    #   direct lattice vectors          reciprocal lattice vectors
+    # 0.000000000  2.813095533  2.812809989    -0.177740142  0.177740142  0.177758186
+    # 2.813095533  0.000000000  2.812809989     0.177740142 -0.177740142  0.177758186
+    # 2.813095533  2.813095533  0.000000000     0.177740142  0.177740142 -0.177758186
     for i, line in enumerate(lines):
-        if "Lattice vectors:" in line:
-            A1_line, A2_line, A3_line = lines[i+2], lines[i+3], lines[i+4]
-            if "A1" not in A1_line and "A2" not in A2_line and "A3" not in A3_line:
-                raise ValueError("A1, A2, A3 not found under 'Lattice vectors:'")
-            for col, A_line in enumerate([A1_line, A2_line, A3_line]):
-                components = A_line.split()[3:6]
-                # cut trailing comma or end paren
+        if "direct lattice vectors" in line:
+            a_line, b_line, c_line = lines[i+1], lines[i+2], lines[i+3]
+            for col, lat_line in enumerate([a_line, b_line, c_line]):
+                components = lat_line.split()[0:3]
                 for row in range(3):
-                    val = components[row][0:-1]
+                    val = components[row]
                     D[row, col] = float(val)
 
     return E_Fermi, D
