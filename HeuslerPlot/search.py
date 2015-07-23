@@ -34,7 +34,7 @@ def FindEs(dir_path, subdir_path=None, bands_name=None):
 
     return result
 
-def FindBands(dir_path, additional_subdir_path, bands_name):
+def FindBands(dir_path, additional_subdir_path=None, bands_name=None):
     '''For each subdirectory sub_path contained in dir_path, look for
     sub_path/OUTCAR, sub_path/OSZICAR, sub_path/bands_name/EIGENVAL, and
     sub_path/bands_name/KPOINTS.
