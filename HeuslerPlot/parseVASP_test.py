@@ -7,9 +7,9 @@ class TestParseOutcar(unittest.TestCase):
         outcar_path = os.path.join("test_data", "e29", "Co2MnSi", "OUTCAR")
         E_Fermi, D = ParseOutcar(outcar_path)
         self.assertEqual(E_Fermi, 8.0505)
-        _vec_equal(self, D[:, 0], (0.0000000000,  -2.8130955325,   2.8128099892))
-        _vec_equal(self, D[:, 1], (0.0000000000,   2.8130955325,   2.8128099892))
-        _vec_equal(self, D[:, 2], (-2.8130955325,   0.0000000000,  -2.8128099892))
+        _vec_equal(self, D[:, 0], (0.000000000, 2.813095533, 2.812809989))
+        _vec_equal(self, D[:, 1], (2.813095533, 0.000000000, 2.812809989))
+        _vec_equal(self, D[:, 2], (2.813095533, 2.813095533, 0.000000000))
 
 class TestParseOszicar(unittest.TestCase):
     def test_Co2MnSi(self):
@@ -24,7 +24,7 @@ class TestParseEigenval(unittest.TestCase):
         ks, eigenvals = ParseEigenval(eigenval_path)
         self.assertEqual(len(ks), 320) # nks
         _vec_equal(self, ks[0], (0.0, 0.0, 0.0))
-        _vec_equal(self, ks[-1], (0.5, 0.0, 0.0))
+        _vec_equal(self, ks[-1], (0.5, 0.0, 0.5))
 
         self.assertEqual(len(eigenvals[0]), 2) # nspin
         self.assertEqual(len(eigenvals[0][0]), 80) # nbands
