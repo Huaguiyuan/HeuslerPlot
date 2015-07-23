@@ -79,6 +79,9 @@ class TestScaledKXs(unittest.TestCase):
                 prev_k_Cart = np.dot(path[i-1], R)
                 k_to_prev_k = np.subtract(prev_k_Cart, k_Cart)
                 expected_dists.append(np.linalg.norm(k_to_prev_k))
+                if debug_print:
+                    print("k_sep_cart {}".format(str(k_to_prev_k)))
+                    print("norm {}".format(str(np.linalg.norm(k_to_prev_k))))
 
         if debug_print:
             print("Expected distance between sym_xs:")
