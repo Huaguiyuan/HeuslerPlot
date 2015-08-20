@@ -74,3 +74,35 @@ def FindBands(dir_path, additional_subdir_path=None, bands_name=None):
             result[sub_name] = subdir_result
 
     return result
+
+def FindCollected(dir_path):
+    '''Look for files contained in dir_path with the form:
+        FILETYPE_structuretype_compound
+    where FILETYPE is KPOINTS, EIGENVAL, OSZICAR, and OUTCAR.
+
+    Return a dictionary with keys given by system names, as specified by the
+    names of the subdirectories of e##. The corresponding values are the
+    same as those returned by FindBands, giving another dictionary with keys
+    "outcar_path", "oszicar_path", "eigenval_path", and "kpoints_path" giving
+    the appropriate file paths.
+    '''
+    filetype_keys = {"KPOINTS": "kpoints_path", "EIGENVAL": "eigenval_path",
+            "OSZICAR": "oszicar_path", "OUTCAR": "outcar_path"}
+
+    result = {}
+    # Enumerate the files in dir_path.
+    p = Path(dir_path)
+    sub_paths = [x for x in p.iterdir() if not x.is_dir()]
+    # Iterate over the files in dir_path.
+    for sub_path in sub_paths:
+        basename = os.path.basename(str(sub_path))
+        name_split = basename.split('_')
+        filetype = name_split[0]
+        key = filetype_keys[filetype]
+        compound = name_split[-1]
+
+        if compound not in result:
+            result[compound] = {}
+        result[compound][key] = str(sub_path)
+
+    return result

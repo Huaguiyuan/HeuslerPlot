@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-from HeuslerPlot.search import FindEs, FindBands
+from HeuslerPlot.search import FindEs, FindBands, FindCollected
 from HeuslerPlot.parseVASP import ParseOutcar, ParseOszicar, ParseEigenval
 
 def PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text=None):
@@ -290,28 +290,33 @@ if __name__ == "__main__":
             help="Search subdirectories of dir_path of the form e##.")
     parser.add_argument('--logo', action='store_true',
             help="Add Heusler site URL to plot")
-    parser.add_argument('--structure_type', default='L21',
+    parser.add_argument('--structure_type', default='L21', type=str,
             help="Type of structure contained in subdirectories of dir_path")
-    parser.add_argument('--scf_dir', default=None,
+    parser.add_argument('--scf_dir', default=None, type=str,
             help="Separate directory for SCF files")
-    parser.add_argument('--scf_subdir_path', default=None,
+    parser.add_argument('--scf_subdir_path', default=None, type=str,
             help="Additional subdirectory to search under system_name for scf calculation")
-    parser.add_argument('--bands_subdir_path', default=None,
-            help="Additional subdirectory to search under system_name for bands calculation")
-    parser.add_argument('--bands_name', default="BANDS",
+    parser.add_argument('--bands_subdir_path', default=None, type=str,
+            help="Additional subdirectory to search under system_name for bands calculation (note -- if scf_dir is not specified, this is also used for scf calculation)")
+    parser.add_argument('--bands_name', default="BANDS", type=str,
             help="Bands subdirectory name")
+    parser.add_argument('--collected_files', action='store_true',
+            help="If this is specified, dir_path gives the path to directory with EIGENVAL/OUTCAR/OSZICAR for all systems collected; assume filenames of the form EIGENVAL_structuretype_compound, etc.")
     args = parser.parse_args()
 
     all_data_paths = None
     scf_data_paths = None
-    if args.searchEs:
-        all_data_paths = FindEs(args.dir_path, args.bands_subdir_path, args.bands_name)
-        if args.scf_dir != None:
-            scf_data_paths = FindEs(args.scf_dir, args.scf_subdir_path)
+    if not args.collected_files:
+        if args.searchEs:
+            all_data_paths = FindEs(args.dir_path, args.bands_subdir_path, args.bands_name)
+            if args.scf_dir != None:
+                scf_data_paths = FindEs(args.scf_dir, args.scf_subdir_path)
+        else:
+            all_data_paths = FindBands(args.dir_path, args.bands_subdir_path, args.bands_name)
+            if args.scf_dir != None:
+                scf_data_paths = FindBands(args.scf_dir, args.scf_subdir_path)
     else:
-        all_data_paths = FindBands(args.dir_path, args.bands_subdir_path, args.bands_name)
-        if args.scf_dir != None:
-            scf_data_paths = FindBands(args.scf_dir, args.scf_subdir_path)
+        all_data_paths = FindCollected(args.dir_path)
 
     for system_name, system_data_paths in all_data_paths.items():
         E_Fermi, D, magmom = None, None, None
@@ -326,9 +331,10 @@ if __name__ == "__main__":
                 print(str(e))
                 continue
         else:
+            print("Reading OUTCAR file {}".format(system_data_paths['outcar_path']))
             E_Fermi, D = ParseOutcar(system_data_paths['outcar_path'])
+            print("Reading OSZICAR file {}".format(system_data_paths['oszicar_path']))
             magmom = ParseOszicar(system_data_paths['oszicar_path'])
-
         try:
             print("Reading EIGENVAL file {}".format(system_data_paths['eigenval_path']))
             ks, eigenvals = ParseEigenval(system_data_paths['eigenval_path'])
