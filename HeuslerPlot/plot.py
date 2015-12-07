@@ -302,6 +302,8 @@ if __name__ == "__main__":
             help="Bands subdirectory name")
     parser.add_argument('--collected_files', action='store_true',
             help="If this is specified, dir_path gives the path to directory with EIGENVAL/OUTCAR/OSZICAR for all systems collected; assume filenames of the form EIGENVAL_structuretype_compound, etc.")
+    parser.add_argument('--structure_from_filename', action='store_true',
+            help="If this is specified together with collected_files, get the structure type from the filename.")
     args = parser.parse_args()
 
     all_data_paths = None
@@ -316,7 +318,7 @@ if __name__ == "__main__":
             if args.scf_dir != None:
                 scf_data_paths = FindBands(args.scf_dir, args.scf_subdir_path)
     else:
-        all_data_paths = FindCollected(args.dir_path)
+        all_data_paths = FindCollected(args.dir_path, args.structure_from_filename)
 
     for system_name, system_data_paths in all_data_paths.items():
         E_Fermi, D, magmom = None, None, None
@@ -347,20 +349,27 @@ if __name__ == "__main__":
         # The rows of R (the R[i, :]) are the reciprocal lattice vectors.
         R = 2.0 * np.pi * np.linalg.inv(D)
 
+        # Get the structure type from the filename, if necessary.
+        structure_type = args.structure_type
+        if 'structure' in system_data_paths:
+            structure_type = system_data_paths['structure']
+        if structure_type == 'Tetragonal':
+            structure_type = 'tetragonal' # keep consistent case
+
         # TODO - get k_labels from KPOINTS?
         k_labels = None
-        if args.structure_type in ["L21", "C1b", "XA"]:
+        if structure_type in ["L21", "C1b", "Xa"]:
             # Setyawan path
             #k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$U$", "$W$", "$L$", "$K$", "$W$", "$U$", "$X$"]
             # FPLO path
             k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$W$", "$U$", "$X$"]
-        elif args.structure_type == "D022":
+        elif structure_type in ["D022", "tetragonal"]:
             k_labels = ["$N$", "$P$", "$X$", "$\Gamma$", "$Z$"]
         else:
-            raise ValueError("Structure type {} not supported".format(args.structure_type))
+            raise ValueError("Structure type {} not supported".format(structure_type))
 
         # TODO - configurable destination (instead of pwd)?
-        out_path = "{}_{}".format(system_name, args.structure_type)
+        out_path = "{}_{}".format(system_name, structure_type)
 
         nspin = len(eigenvals[0])
         if nspin == 2:

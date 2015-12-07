@@ -75,7 +75,7 @@ def FindBands(dir_path, additional_subdir_path=None, bands_name=None):
 
     return result
 
-def FindCollected(dir_path):
+def FindCollected(dir_path, structure_from_filename = False):
     '''Look for files contained in dir_path with the form:
         FILETYPE_structuretype_compound
     where FILETYPE is KPOINTS, EIGENVAL, OSZICAR, and OUTCAR.
@@ -99,10 +99,15 @@ def FindCollected(dir_path):
         name_split = basename.split('_')
         filetype = name_split[0]
         key = filetype_keys[filetype]
+
+        structure = name_split[1]
         compound = name_split[-1]
 
         if compound not in result:
             result[compound] = {}
         result[compound][key] = str(sub_path)
+
+        if structure_from_filename:
+            result[compound]["structure"] = structure
 
     return result
