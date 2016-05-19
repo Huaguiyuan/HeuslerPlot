@@ -4,12 +4,12 @@ Instructions for installation on Debian derivatives (Debian/Ubuntu/Mint/etc.).
 
 Requires setuptools, numpy, and matplotlib:
 
-    sudo apt-get install python3-setuptools python3-dev python3-numpy python3-matplotlib python3-tk
+    sudo apt-get install python3-setuptools python3-dev python3-numpy python3-matplotlib python3-tk zlib1g zlib1g-dev
 
 compress.py requires libpng >= 1.6:
 
     cd ~
-    wget http://ufpr.dl.sourceforge.net/project/libpng/libpng16/1.6.17/libpng-1.6.17.tar.gz
+    wget ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-1.6.21.tar.gz
     tar -xvzf libpng-1.6.17.tar.gz
     cd libpng-1.6.17.tar.gz
     ./configure

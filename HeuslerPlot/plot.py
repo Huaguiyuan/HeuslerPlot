@@ -264,7 +264,7 @@ def swap_channels_if_mag_neg(magmom, eigenvals):
 
     Returns a new eigenval list with this swap made if necessary.
     '''
-    if magmom < 0.0:
+    if magmom <= 0.0:
         corrected = []
         for k_index in range(len(eigenvals)):
             corrected.append((eigenvals[k_index][1], eigenvals[k_index][0]))
