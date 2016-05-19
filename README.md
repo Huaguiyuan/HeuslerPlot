@@ -40,7 +40,7 @@ To have changes to the source reflected immediately:
 
     sudo python3 setup.py develop
 
-# Usage
+# Usage: band plotting
 
 To plot bands in a directory at "dirpath" with a structure dirpath/e29/Co2MnSi/BANDS (where there may be many e## and e##/systemname subdirectories) use (where `structure_type` is set appropriately):
 
@@ -57,3 +57,13 @@ If there is an additional subdirectory containing tetragonal scf and bands runs,
 To plot bands where files have been collected in a directory with filenames of the form `EIGENVAL_Xa_Fe2CoAs` (from bands calculation), `OUTCAR_Xa_Fe2CoAs` (from SCF), `OSZICAR_Xa_Fe2CoAs` (from SCF) (inverse Heuslers have been collected like this):
 
     python3 plot.py --logo --collected_files --structure_from_filename "dirpath"
+
+# Usage: compression
+
+To compress all plots in the HeuslerPlot subdirectory, run:
+
+    python3 compress.py
+
+To compress all plots in a different directory with path `dir_path`, run:
+
+    python3 compress.py "dir_path"
