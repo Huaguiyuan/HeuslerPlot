@@ -42,6 +42,18 @@ To have changes to the source reflected immediately:
 
 # Usage
 
-To plot bands in a directory at "dirpath" with a structure dirpath/e29/Co2MnSi/BANDS (where there may be many e## and e##/systemname subdirectories) use:
+To plot bands in a directory at "dirpath" with a structure dirpath/e29/Co2MnSi/BANDS (where there may be many e## and e##/systemname subdirectories) use (where `structure_type` is set appropriately):
 
-    python3 plot.py --searchEs --logo "dirpath"
+    python3 plot.py --searchEs --logo --structure_type "L21" "dirpath"
+
+If the bands subdirectory has a different name (such as dirpath/e29/Co2MnSi/bands instead of .../BANDS) but the directory structure is otherwise the same as above (this is the structure for half-Heusler cubic compounds):
+
+    python3 plot.py --searchEs --logo --structure_type "C1b" --bands_name "bands" "dirpath"
+
+If there is an additional subdirectory containing tetragonal scf and bands runs, e.g. `dirpath/e29/Co2MnSi/bands_t` gives the tetragonal SCF and `dirpath/e29/Co2MnSi/bands_t/bands` gives the tetragonal bands (this is the structure for half-Heusler tetragonal compounds):
+
+    python3 plot.py --searchEs --logo --structure_type "tetragonal" --bands_subdir_path "bands_t" --bands_name "bands" "dirpath"
+
+To plot bands where files have been collected in a directory with filenames of the form `EIGENVAL_Xa_Fe2CoAs` (from bands calculation), `OUTCAR_Xa_Fe2CoAs` (from SCF), `OSZICAR_Xa_Fe2CoAs` (from SCF) (inverse Heuslers have been collected like this):
+
+    python3 plot.py --logo --collected_files --structure_from_filename "dirpath"
