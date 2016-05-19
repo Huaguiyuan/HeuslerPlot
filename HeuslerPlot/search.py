@@ -61,11 +61,12 @@ def FindBands(dir_path, additional_subdir_path=None, bands_name=None, exclude_if
         sub_name = os.path.basename(str(sub_path))
         if additional_subdir_path != None:
             sub_path = sub_path / additional_subdir_path
-
-        exclude_path = str(sub_path / exclude_if_present)
-        if os.path.exists(exclude_path):
-            print("Skipping {} due to exclude_if_present value".format(sub_path))
-            continue
+        
+        if exclude_if_present is not None:
+            exclude_path = str(sub_path / exclude_if_present)
+            if os.path.exists(exclude_path):
+                print("Skipping {} due to exclude_if_present value".format(sub_path))
+                continue
 
         # Assemble paths to required data files in this subdirectory.
         subdir_result = {}
