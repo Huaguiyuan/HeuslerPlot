@@ -2,7 +2,7 @@ import os
 import re
 from pathlib import Path
 
-def FindEs(dir_path, subdir_path=None, bands_name=None):
+def FindEs(dir_path, subdir_path=None, bands_name=None, exclude_if_present=None):
     '''Look for subdirectories of dir_path which have names of the form
     e[0-9][0-9] (such as 'e18', 'e29', etc.). For each such subdirectory, 
     search it for subdirectories with the appropriate band files (as given
@@ -28,18 +28,21 @@ def FindEs(dir_path, subdir_path=None, bands_name=None):
         if pattern.fullmatch(sub_name) != None:
             # sub_path has the correct form; search its subdirectories
             # and add their data.
-            this_e_result = FindBands(str(sub_path), subdir_path, bands_name)
+            this_e_result = FindBands(str(sub_path), subdir_path, bands_name, exclude_if_present)
             for k, v in this_e_result.items():
                 result[k] = v
 
     return result
 
-def FindBands(dir_path, additional_subdir_path=None, bands_name=None):
+def FindBands(dir_path, additional_subdir_path=None, bands_name=None, exclude_if_present=None):
     '''For each subdirectory sub_path contained in dir_path, look for
     sub_path/OUTCAR, sub_path/OSZICAR, sub_path/bands_name/EIGENVAL, and
     sub_path/bands_name/KPOINTS.
 
     If additional_subdir_path != None, add it to sub_path.
+
+    If exclude_if_present is not None, ignore any subdirectories of dir_path
+    which themselves contain a file or subdirectory with name matching exclude_if_present.
 
     Return a dictionary with keys given by system names, as specified by the
     names of the subdirectories of dir_path. The corresponding values give
@@ -58,6 +61,12 @@ def FindBands(dir_path, additional_subdir_path=None, bands_name=None):
         sub_name = os.path.basename(str(sub_path))
         if additional_subdir_path != None:
             sub_path = sub_path / additional_subdir_path
+
+        exclude_path = str(sub_path / exclude_if_present)
+        if os.path.exists(exclude_path):
+            print("Skipping {} due to exclude_if_present value".format(sub_path))
+            continue
+
         # Assemble paths to required data files in this subdirectory.
         subdir_result = {}
         subdir_result["outcar_path"] = str(sub_path / "OUTCAR")

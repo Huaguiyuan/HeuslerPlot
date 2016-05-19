@@ -292,14 +292,16 @@ if __name__ == "__main__":
             help="Add Heusler site URL to plot")
     parser.add_argument('--structure_type', default='L21', type=str,
             help="Type of structure contained in subdirectories of dir_path")
+    parser.add_argument('--bands_name', default="BANDS", type=str,
+            help="Bands subdirectory name")
+    parser.add_argument('--exclude_if_present', default=None, type=str,
+            help="Exclude a compound if the given file or directory name is present in the scf directory")
     parser.add_argument('--scf_dir', default=None, type=str,
             help="Separate directory for SCF files")
     parser.add_argument('--scf_subdir_path', default=None, type=str,
             help="Additional subdirectory to search under system_name for scf calculation")
     parser.add_argument('--bands_subdir_path', default=None, type=str,
             help="Additional subdirectory to search under system_name for bands calculation (note -- if scf_dir is not specified, this is also used for scf calculation)")
-    parser.add_argument('--bands_name', default="BANDS", type=str,
-            help="Bands subdirectory name")
     parser.add_argument('--collected_files', action='store_true',
             help="If this is specified, dir_path gives the path to directory with EIGENVAL/OUTCAR/OSZICAR for all systems collected; assume filenames of the form EIGENVAL_structuretype_compound, etc.")
     parser.add_argument('--structure_from_filename', action='store_true',
@@ -310,13 +312,13 @@ if __name__ == "__main__":
     scf_data_paths = None
     if not args.collected_files:
         if args.searchEs:
-            all_data_paths = FindEs(args.dir_path, args.bands_subdir_path, args.bands_name)
+            all_data_paths = FindEs(args.dir_path, args.bands_subdir_path, args.bands_name, exclude_if_present=args.exclude_if_present)
             if args.scf_dir != None:
-                scf_data_paths = FindEs(args.scf_dir, args.scf_subdir_path)
+                scf_data_paths = FindEs(args.scf_dir, args.scf_subdir_path, exclude_if_present=args.exclude_if_present)
         else:
-            all_data_paths = FindBands(args.dir_path, args.bands_subdir_path, args.bands_name)
+            all_data_paths = FindBands(args.dir_path, args.bands_subdir_path, args.bands_name, exclude_if_present=args.exclude_if_present)
             if args.scf_dir != None:
-                scf_data_paths = FindBands(args.scf_dir, args.scf_subdir_path)
+                scf_data_paths = FindBands(args.scf_dir, args.scf_subdir_path, exclude_if_present=args.exclude_if_present)
     else:
         all_data_paths = FindCollected(args.dir_path, args.structure_from_filename)
 

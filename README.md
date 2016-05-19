@@ -46,9 +46,9 @@ To plot bands in a directory at "dirpath" with a structure dirpath/e29/Co2MnSi/B
 
     python3 plot.py --searchEs --logo --structure_type "L21" "dirpath"
 
-If the bands subdirectory has a different name (such as dirpath/e29/Co2MnSi/bands instead of .../BANDS) but the directory structure is otherwise the same as above (this is the structure for half-Heusler cubic compounds):
+If the bands subdirectory has a different name (such as dirpath/e29/Co2MnSi/bands instead of .../BANDS) but the directory structure is otherwise the same as above (this is the structure for half-Heusler cubic compounds); also exclude compounds containing `bands_t` subdirectory indicating the compound is tetragonal:
 
-    python3 plot.py --searchEs --logo --structure_type "C1b" --bands_name "bands" "dirpath"
+    python3 plot.py --searchEs --logo --structure_type "C1b" --bands_name "bands" --exclude_if_present "bands_t" "dirpath"
 
 If there is an additional subdirectory containing tetragonal scf and bands runs, e.g. `dirpath/e29/Co2MnSi/bands_t` gives the tetragonal SCF and `dirpath/e29/Co2MnSi/bands_t/bands` gives the tetragonal bands (this is the structure for half-Heusler tetragonal compounds):
 
