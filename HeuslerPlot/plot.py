@@ -283,7 +283,7 @@ def _vec_approx_equal(u, v, eps):
             return False
     return True
 
-if __name__ == "__main__":
+def _main():
     parser = argparse.ArgumentParser(description="Plot VASP bands.")
     parser.add_argument('dir_path', type=str, help="Path to directory with data to plot.")
     parser.add_argument('--searchEs', action='store_true',
@@ -382,3 +382,6 @@ if __name__ == "__main__":
             logo_text = "heusleralloys.mint.ua.edu"
 
         PlotBands(ks, eigenvals, E_Fermi, k_labels, R, out_path, logo_text)
+
+if __name__ == "__main__":
+    _main()
