@@ -306,6 +306,8 @@ def _main():
             help="If this is specified, dir_path gives the path to directory with EIGENVAL/OUTCAR/OSZICAR for all systems collected; assume filenames of the form EIGENVAL_structuretype_compound, etc.")
     parser.add_argument('--structure_from_filename', action='store_true',
             help="If this is specified together with collected_files, get the structure type from the filename.")
+    parser.add_argument('--check_case', action='store_true',
+            help="If this is specified, change Tetragonal --> tetragonal")
     args = parser.parse_args()
 
     all_data_paths = None
@@ -355,7 +357,7 @@ def _main():
         structure_type = args.structure_type
         if 'structure' in system_data_paths:
             structure_type = system_data_paths['structure']
-        if structure_type == 'Tetragonal':
+        if args.check_case and structure_type == 'Tetragonal':
             structure_type = 'tetragonal' # keep consistent case
 
         # TODO - get k_labels from KPOINTS?
@@ -365,7 +367,7 @@ def _main():
             #k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$U$", "$W$", "$L$", "$K$", "$W$", "$U$", "$X$"]
             # FPLO path
             k_labels = ["$\Gamma$", "$X$", "$W$", "$K$", "$\Gamma$", "$L$", "$W$", "$U$", "$X$"]
-        elif structure_type in ["D022", "tetragonal"]:
+        elif structure_type in ["D022", "tetragonal", "Tetragonal"]:
             k_labels = ["$N$", "$P$", "$X$", "$\Gamma$", "$Z$"]
         else:
             raise ValueError("Structure type {} not supported".format(structure_type))
