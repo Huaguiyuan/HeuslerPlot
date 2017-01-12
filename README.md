@@ -34,11 +34,11 @@ compress.py also requires [pngquant](https://pngquant.org/):
 
 Go back to HeuslerPlot directory and install using setup.py:
 
-    sudo python3 setup.py install
+    python3 setup.py install --user
 
 To have changes to the source reflected immediately:
 
-    sudo python3 setup.py develop
+    python3 setup.py develop --user
 
 # Usage: band plotting
 
