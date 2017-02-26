@@ -9,9 +9,9 @@ Requires setuptools, numpy, and matplotlib:
 compress.py requires libpng >= 1.6:
 
     cd ~
-    wget ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-1.6.21.tar.gz
-    tar -xvzf libpng-1.6.17.tar.gz
-    cd libpng-1.6.17.tar.gz
+    wget ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/libpng-1.6.28.tar.gz
+    tar -xvzf libpng-1.6.28.tar.gz
+    cd libpng-1.6.28.tar.gz
     ./configure
     make check
     sudo make install
