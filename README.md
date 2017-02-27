@@ -16,20 +16,12 @@ compress.py requires libpng >= 1.6:
     make check
     sudo make install
 
-Add /usr/local/lib to `LD_LIBRARY_PATH` -- add the following to ~/.bashrc and then restart bash:
-
-    if [ -z "$LD_LIBRARY_PATH" ]; then
-        export LD_LIBRARY_PATH=/usr/local/lib
-    else
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-    fi
-
 compress.py also requires [pngquant](https://pngquant.org/):
 
     cd ~
     git clone https://github.com/pornel/pngquant.git
     cd pngquant
-    ./configure
+    ./configure LDFLAGS="-Wl,-rpath,/usr/local/lib -L/usr/local/lib"
     sudo make install
 
 Go back to HeuslerPlot directory and install using setup.py:
